@@ -18,9 +18,18 @@ import sys
 def deliver() -> int:
     here = os.path.dirname(os.path.abspath(__file__))
     source = os.path.join(here, "entry.png")
+    if not os.path.isfile(source):
+        print(f"error: entry.png not found next to {__file__}", file=sys.stderr)
+        return 1
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR") or "output"
     os.makedirs(out_dir, exist_ok=True)
-    shutil.copyfile(source, os.path.join(out_dir, "entry.png"))
+    target = os.path.join(out_dir, "entry.png")
+    shutil.copyfile(source, target)
+    size = os.path.getsize(source)
+    if os.path.getsize(target) != size:
+        print("error: delivered entry.png size does not match the source", file=sys.stderr)
+        return 1
+    print(f"Delivered entry.png ({size} bytes) to {target}")
     return 0
 
 
